@@ -1,5 +1,8 @@
 <?php
 
+
+use App\Http\Controller\API\FoodController;
+use App\Http\Controller\API\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,3 +27,5 @@ Route::middleware('auth:sanctum')->group(function(){
 
 Route::post('login', [UserController::class, 'login']);
 Route::post('register', [UserController::class, 'register']);
+
+Route::get('food', [FoodController::class, 'all']);
