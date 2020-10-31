@@ -6,18 +6,18 @@ use App\Actions\Fortify\PasswordValidationRules;
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 
 class UserController extends Controller
 {
 
-    public PasswordValidationRules
+    use PasswordValidationRules;
 
-    public function login(Request $request)
+    public function login (Request $request)
     {
         try {
             // validasi
@@ -53,7 +53,7 @@ class UserController extends Controller
         }
     }
 
-    public function register(Request $request)
+    public function register (Request $request)
     {
         try {
             //validas
