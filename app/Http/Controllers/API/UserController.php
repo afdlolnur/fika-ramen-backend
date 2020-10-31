@@ -2,13 +2,21 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\Fortify\PasswordValidationRules;
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+
 
 class UserController extends Controller
 {
+
+    public PasswordValidationRules
+
     public function login(Request $request)
     {
         try {
@@ -44,4 +52,44 @@ class UserController extends Controller
             ], 'Authenticated', 500 );
         }
     }
+
+    public function register(Request $request)
+    {
+        try {
+            //validas
+            $request->validate([
+                'name' => ['required','string','max:255'],
+                'email' => ['required','string','email','max:255','unique:users'],
+                'password' => $this->passwordRules()
+            ]);
+
+            //buat user
+            User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'address' => $request->address,
+                'houseNumber' => $request->houseNumber,
+                'phoneNumber' => $request->phoneNumber,
+                'city' => $request->city,
+                'password' => Hash::make($request->password),
+            ]);
+
+            //ambil data yg barusan disimpan
+            $user = User::where('email', $request->email)->first();
+
+            $tokenResult = $user->createToken('authToken')->plainTextToken;
+
+            return ResponseFormatter::success([
+                'access_token' => $tokenResult,
+                'token_type' => 'Bearer',
+                'user' => $user
+            ]);
+        } catch (Exception $error) {
+            return ResponseFormetter::error([
+                'message' => 'Something went wrong',
+                'error' => $error
+            ], 'Authentication Failed', 500);
+        }
+    }
+
 }
